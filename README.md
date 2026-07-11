@@ -1,4 +1,4 @@
-[watch demo](assets/demo.webm)
+[watch demo](assets/demo.mp4)
 
 # Cycloidal Drive Profile Calculator (VPTK)
 
