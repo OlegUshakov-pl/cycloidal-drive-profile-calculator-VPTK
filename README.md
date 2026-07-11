@@ -108,3 +108,7 @@ The calculator is available in two language versions:
 ## License
 
 This project is for educational and engineering use. No license specified.
+
+## Demo
+
+[demo](https://github.com/OlegUshakov-pl/cycloidal-drive-profile-calculator-VPTK/releases/download/demo/demo.mp4)
