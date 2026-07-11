@@ -1,3 +1,5 @@
+[watch demo](assets/demo.webm)
+
 # Cycloidal Drive Profile Calculator (VPTK)
 
 A [Streamlit](https://streamlit.io/) application for calculating and visualizing the profile of a **cycloidal drive with intermediate rolling elements** (also known as VPTK — *Volnovoy Reduktor s Promezhutochnymi Telami Kacheniya*).
