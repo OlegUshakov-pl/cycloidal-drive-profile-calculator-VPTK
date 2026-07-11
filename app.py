@@ -50,7 +50,8 @@ def compute_geometry(i, dsh, Rout, D, u, resolution):
 
     theta = np.linspace(0, 2 * np.pi, resolution)
 
-    S = np.sqrt((rsh + rd) ** 2 - np.power(e * np.sin(zg * theta), 2))
+    S_arg = (rsh + rd) ** 2 - np.power(e * np.sin(zg * theta), 2)
+    S = np.sqrt(np.maximum(S_arg, 0.0))
     l = e * np.cos(zg * theta) + S
     Xi = np.arctan2(e * zg * np.sin(zg * theta), S)
 
@@ -59,7 +60,8 @@ def compute_geometry(i, dsh, Rout, D, u, resolution):
     xy = np.stack((x, y), axis=1)
 
     sh_angle = np.linspace(0, 1, zsh + 1) * 2 * np.pi
-    S_sh = np.sqrt((rsh + rd) ** 2 - np.power(e * np.sin(zg * sh_angle), 2))
+    S_sh_arg = (rsh + rd) ** 2 - np.power(e * np.sin(zg * sh_angle), 2)
+    S_sh = np.sqrt(np.maximum(S_sh_arg, 0.0))
     l_Sh = e * np.cos(zg * sh_angle) + S_sh
     x_sh = l_Sh * np.sin(sh_angle)
     y_sh = l_Sh * np.cos(sh_angle)
@@ -97,10 +99,11 @@ def build_dxf(g, D, flags):
         msp.add_circle((0, 0), radius=g["Rsep_in"])
 
     if flags["eccentric"]:
+        half = g["rd"] * 0.8
         msp.add_point([0, g["e"]])
         msp.add_lwpolyline([[0, 0], [0, g["e"]]])
-        msp.add_lwpolyline([[-6, 0], [6, 0]])
-        msp.add_lwpolyline([[-3, g["e"]], [3, g["e"]]])
+        msp.add_lwpolyline([[-half, 0], [half, 0]])
+        msp.add_lwpolyline([[-half / 2, g["e"]], [half / 2, g["e"]]])
         msp.add_circle((0, g["e"]), radius=g["rd"])
 
     if flags["balls"]:
@@ -124,9 +127,10 @@ def build_plot(g, D, flags):
         ax.plot(g["x"], g["y"], linewidth=1.0, label="Профиль жесткого колеса")
 
     if flags["eccentric"]:
-        ax.plot([0, 0], (0, g["e"]), ".", linewidth=1.0)
-        ax.plot([-6, 6], (0, 0), "--k", linewidth=1.0)
-        ax.plot([-3, 3], (g["e"], g["e"]), "--k", linewidth=1.0)
+        half = g["rd"] * 0.8
+        ax.plot([0, 0], [0, g["e"]], ".", linewidth=1.0)
+        ax.plot([-half, half], [0, 0], "--k", linewidth=1.0)
+        ax.plot([-half / 2, half / 2], [g["e"], g["e"]], "--k", linewidth=1.0)
         rd_circle = plt.Circle((0, g["e"]), g["rd"], color="b", fill=False, linewidth=1.0)
         ax.add_patch(rd_circle)
 
@@ -152,6 +156,7 @@ def build_plot(g, D, flags):
     ax.set_xlabel("X, мм")
     ax.set_ylabel("Y, мм")
     ax.set_title("Профиль ВПТК")
+    plt.close(fig)
     return fig
 
 
@@ -204,7 +209,7 @@ with st.sidebar:
         "out_diameter": st.checkbox("Внешний диаметр редуктора", value=True),
     }
 
-    out_file = st.text_input("Имя DXF-файла", value="vptc.dxf")
+    out_file = st.text_input("Имя DXF-файла", value="vptk.dxf")
 
 # Расчет
 try:
@@ -238,7 +243,7 @@ with col_params:
     st.download_button(
         label="⬇️ Скачать DXF",
         data=dxf_bytes,
-        file_name=out_file if out_file.strip() else "vptc.dxf",
+        file_name=out_file if out_file.strip() else "vptk.dxf",
         mime="application/dxf",
     )
 
