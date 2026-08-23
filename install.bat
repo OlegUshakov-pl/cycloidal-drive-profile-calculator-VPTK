@@ -1,6 +1,6 @@
 @echo off
-echo Creating virtual environment...
-python -m venv venv
+echo Creating virtual environment in parent folder...
+python -m venv ..\venv
 if %errorlevel% neq 0 (
     echo Failed to create virtual environment. Make sure Python is installed.
     pause
@@ -8,7 +8,7 @@ if %errorlevel% neq 0 (
 )
 
 echo Activating virtual environment...
-call venv\Scripts\activate.bat
+call ..\venv\Scripts\activate.bat
 
 echo Installing dependencies...
 pip install -r requirements.txt
